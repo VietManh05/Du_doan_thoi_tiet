@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phân loại Ảnh Thời tiết | AI Weather</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-light: #3b82f6;
+            --primary-dark: #1d4ed8;
+            --secondary-color: #8b5cf6;
+            --success-color: #22c55e;
+            --warning-color: #eab308;
+            --danger-color: #ef4444;
+            --background-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --text-light: #64748b;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo {
+            width: 150px;
+            height: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 2rem;
+            min-height: 100vh;
+            background: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 1.5rem;
+            box-shadow: var(--shadow-lg);
+            width: 90%;
+            max-width: 800px;
+            margin: 0 auto;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 1rem;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin: 0 0 1rem 0;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            color: var(--text-light);
+            font-size: 1.1rem;
+            font-weight: 400;
+            margin-bottom: 2rem;
+        }
+
+        .upload-section {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 3rem 2rem;
+            border: 2px dashed var(--border-color);
+            border-radius: 1rem;
+            transition: all 0.3s ease;
+            background: linear-gradient(to bottom right, var(--card-bg), #f8fafc);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, var(--primary-light) 0%, var(--secondary-color) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 0;
+        }
+
+        .upload-section:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .upload-section:hover::before {
+            opacity: 0.05;
+        }
+
+        .upload-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        button {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 0.75rem;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            background: linear-gradient(135deg, var(--primary-light), var(--secondary-color));
+        }
+
+        button i {
+            font-size: 1.2rem;
+        }
+
+        .preview-container {
+            position: relative;
+            max-width: 400px;
+            margin: 2rem auto;
+            display: none;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+        }
+
+        #preview {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: all 0.3s ease;
+        }
+
+        .preview-container:hover #preview {
+            transform: scale(1.05);
+        }
+
+        .preview-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.3), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .preview-container:hover .preview-overlay {
+            opacity: 1;
+        }
+
+        #result {
+            margin-top: 2rem;
+            padding: 2rem;
+            border-radius: 1rem;
+            display: none;
+            background: var(--card-bg);
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--border-color);
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(20px);
+                box-shadow: var(--shadow-sm);
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0);
+                box-shadow: var(--shadow-md);
+            }
+        }
+
+        .progress {
+            display: none;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .progress p {
+            color: var(--primary-color);
+            font-weight: 500;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .progress i {
+            animation: spin 1.5s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .confidence-bars {
+            margin-top: 2rem;
+        }
+
+        .result-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .result-header h3 {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .weather-type {
+            background: var(--card-bg);
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 0.75rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .weather-type:hover {
+            transform: translateX(5px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .confidence-bar {
+            margin: 8px 0;
+            background-color: var(--background-color);
+            border-radius: 0.5rem;
+            overflow: hidden;
+            height: 24px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bar-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                45deg,
+                rgba(255,255,255,0.1) 25%,
+                transparent 25%,
+                transparent 50%,
+                rgba(255,255,255,0.1) 50%,
+                rgba(255,255,255,0.1) 75%,
+                transparent 75%
+            );
+            background-size: 24px 24px;
+            animation: stripe-animation 1s linear infinite;
+        }
+
+        @keyframes stripe-animation {
+            0% { background-position: 0 0; }
+            100% { background-position: 24px 0; }
+        }
+
+        .bar-label {
+            margin: 8px 0;
+            font-weight: 500;
+            color: var(--text-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1rem;
+        }
+
+        .weather-icon {
+            font-size: 1.5rem;
+            margin-right: 0.5rem;
+        }
+
+        .confidence-value {
+            font-family: 'Poppins', monospace;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 1rem;
+        }
+
+        .tab-button {
+            background: none;
+            border: none;
+            color: var(--text-light);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 0.5rem 1rem;
+            transition: all 0.3s ease;
+            position: relative;
+            box-shadow: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tab-button:hover {
+            color: var(--primary-color);
+            transform: none;
+            box-shadow: none;
+        }
+
+        .tab-button.active {
+            color: var(--primary-color);
+            font-weight: 600;
+            box-shadow: none;
+            transform: none;
+        }
+
+        .tab-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1rem;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .history-list {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            background: var(--background-color);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-radius: 0.75rem;
+            border-left: 4px solid var(--primary-color);
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-item:hover {
+            background: #eff6ff;
+            box-shadow: var(--shadow-sm);
+            transform: translateX(5px);
+        }
+
+        .history-item-info {
+            flex: 1;
+        }
+
+        .history-item-time {
+            font-size: 0.9rem;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+        }
+
+        .history-item-prediction {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .history-item-details {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            display: flex;
+            gap: 1rem;
+        }
+
+        .history-item-confidence {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            text-align: center;
+            min-width: 80px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-light);
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .statistics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--primary-light), var(--secondary-color));
+            color: white;
+            padding: 1.5rem;
+            border-radius: 0.75rem;
+            text-align: center;
+            box-shadow: var(--shadow-md);
+        }
+
+        .stat-card-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card-value {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo-container">
+                <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="AI Weather Logo" class="logo">
+            </div>
+            <h1>AI Weather Classification</h1>
+            <p class="subtitle">Công nghệ AI phân loại thời tiết qua hình ảnh</p>
+        </div>
+        
+        <div class="upload-section" id="dropZone">
+            <div class="upload-content">
+                <input type="file" id="imageInput" accept=".jpg,.jpeg,.png" style="display: none;">
+                <button onclick="document.getElementById('imageInput').click()">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    Tải ảnh lên
+                </button>
+                <p style="margin-top: 1rem; color: var(--text-light);">
+                    <i class="fas fa-info-circle"></i>
+                    Kéo thả hoặc click để chọn ảnh (JPG, JPEG, PNG)
+                </p>
+            </div>
+        </div>
+
+        <div class="preview-container">
+            <img id="preview" src="#" alt="Preview">
+            <div class="preview-overlay"></div>
+        </div>
+        
+        <div class="progress">
+            <p>
+                <i class="fas fa-spinner"></i>
+                Đang phân tích ảnh...
+            </p>
+        </div>
+
+        <div id="result">
+            <div class="result-header">
+                <h3><i class="fas fa-chart-bar"></i> Kết quả Phân tích</h3>
+                <p id="prediction" style="font-size: 1.2rem; font-weight: 500; color: var(--primary-color);"></p>
+            </div>
+            
+            <div class="confidence-bars">
+                <div class="weather-type">
+                    <div class="bar-label">
+                        <div>
+                            <i class="fas fa-sun weather-icon" style="color: var(--warning-color);"></i>
+                            <span>Nắng</span>
+                        </div>
+                        <span id="sunny-confidence" class="confidence-value"></span>
+                    </div>
+                    <div class="confidence-bar">
+                        <div class="bar-fill" id="sunny-bar"></div>
+                    </div>
+                </div>
+                
+                <div class="weather-type">
+                    <div class="bar-label">
+                        <div>
+                            <i class="fas fa-cloud-rain weather-icon" style="color: var(--primary-color);"></i>
+                            <span>Mưa</span>
+                        </div>
+                        <span id="rainy-confidence" class="confidence-value"></span>
+                    </div>
+                    <div class="confidence-bar">
+                        <div class="bar-fill" id="rainy-bar"></div>
+                    </div>
+                </div>
+                
+                <div class="weather-type">
+                    <div class="bar-label">
+                        <div>
+                            <i class="fas fa-snowflake weather-icon" style="color: #06b6d4;"></i>
+                            <span>Tuyết</span>
+                        </div>
+                        <span id="snowy-confidence" class="confidence-value"></span>
+                    </div>
+                    <div class="confidence-bar">
+                        <div class="bar-fill" id="snowy-bar"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border-color);">
+                <div style="display: flex; gap: 1rem; font-size: 0.9rem; color: var(--text-light);">
+                    <div><strong>Thời gian xử lý:</strong> <span id="duration">0</span>s</div>
+                    <div><strong>Lúc:</strong> <span id="result-time">--:--:--</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-button active" onclick="switchTab('prediction')">
+                <i class="fas fa-image"></i>
+                Dự đoán
+            </button>
+            <button class="tab-button" onclick="switchTab('history')">
+                <i class="fas fa-history"></i>
+                Lịch sử (<span id="history-count">0</span>)
+            </button>
+            <button class="tab-button" onclick="switchTab('statistics')">
+                <i class="fas fa-chart-pie"></i>
+                Thống kê
+            </button>
+        </div>
+
+        <!-- Prediction Tab -->
+        <div id="prediction" class="tab-content active">
+            <!-- Content will be in the result div above -->
+        </div>
+
+        <!-- History Tab -->
+        <div id="history" class="tab-content">
+            <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                <button onclick="exportHistory()" style="flex: 1; background: linear-gradient(135deg, #22c55e, #16a34a);">
+                    <i class="fas fa-download"></i>
+                    Xuất JSON
+                </button>
+                <button onclick="exportHistoryCSV()" style="flex: 1; background: linear-gradient(135deg, #3b82f6, #1d4ed8);">
+                    <i class="fas fa-file-csv"></i>
+                    Xuất CSV
+                </button>
+                <button onclick="clearHistory()" style="flex: 1; background: #ef4444;">
+                    <i class="fas fa-trash"></i>
+                    Xóa lịch sử
+                </button>
+            </div>
+            <div class="history-list" id="historyList">
+                <div class="empty-state">
+                    <i class="fas fa-inbox"></i>
+                    <p>Chưa có dữ liệu phân tích</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Statistics Tab -->
+        <div id="statistics" class="tab-content">
+            <div class="statistics-grid" id="statisticsGrid">
+                <div class="stat-card">
+                    <div class="stat-card-label">Tổng dự đoán</div>
+                    <div class="stat-card-value" id="stat-total">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-label">Độ tin cậy trung bình</div>
+                    <div class="stat-card-value" id="stat-avg-confidence">0%</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-label">Thời gian xử lý trung bình</div>
+                    <div class="stat-card-value" id="stat-avg-duration">0s</div>
+                </div>
+            </div>
+            <div id="predictionStats"></div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize
+        loadHistory();
+        loadStatistics();
+        setInterval(loadHistory, 10000); // Refresh every 10 seconds
+
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-button').forEach(el => {
+                el.classList.remove('active');
+            });
+            
+            // Show selected tab
+            const tabContent = document.getElementById(tabName);
+            if (tabContent) {
+                tabContent.classList.add('active');
+            }
+            
+            // Mark button as active
+            event.target.closest('.tab-button').classList.add('active');
+            
+            if (tabName === 'statistics') {
+                loadStatistics();
+            }
+        }
+
+        function loadHistory() {
+            fetch('/api/history/all?limit=100')
+                .then(response => response.json())
+                .then(data => {
+                    const historyList = document.getElementById('historyList');
+                    document.getElementById('history-count').textContent = data.count || 0;
+                    
+                    if (!data.records || data.records.length === 0) {
+                        historyList.innerHTML = `
+                            <div class="empty-state">
+                                <i class="fas fa-inbox"></i>
+                                <p>Chưa có dữ liệu phân tích</p>
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    let html = '';
+                    data.records.forEach(record => {
+                        const timestamp = new Date(record.timestamp);
+                        const timeStr = timestamp.toLocaleString('vi-VN');
+                        const confidence = (record.confidence * 100).toFixed(1);
+                        
+                        // Determine icon based on prediction
+                        let icon = 'fas fa-cloud';
+                        if (record.prediction === 'Nắng') icon = 'fas fa-sun';
+                        else if (record.prediction === 'Mưa') icon = 'fas fa-cloud-rain';
+                        else if (record.prediction === 'Tuyết') icon = 'fas fa-snowflake';
+                        
+                        html += `
+                            <div class="history-item">
+                                <div class="history-item-info">
+                                    <div class="history-item-time">
+                                        <i class="fas fa-calendar-alt"></i> ${timeStr}
+                                    </div>
+                                    <div class="history-item-prediction">
+                                        <i class="${icon}"></i> ${record.prediction}
+                                    </div>
+                                    <div class="history-item-details">
+                                        <span><i class="fas fa-image"></i> ${record.image_name}</span>
+                                        <span><i class="fas fa-hourglass-half"></i> ${(record.duration || 0).toFixed(2)}s</span>
+                                    </div>
+                                </div>
+                                <div class="history-item-confidence">${confidence}%</div>
+                            </div>
+                        `;
+                    });
+                    
+                    historyList.innerHTML = html;
+                })
+                .catch(error => console.error('Error loading history:', error));
+        }
+
+        function loadStatistics() {
+            fetch('/api/history/date?year=2025&month=12&day=2')
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.records || data.records.length === 0) {
+                        document.getElementById('statisticsGrid').innerHTML = `
+                            <div class="empty-state" style="grid-column: 1/-1;">
+                                <i class="fas fa-inbox"></i>
+                                <p>Chưa có dữ liệu thống kê</p>
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    // Calculate statistics
+                    let total = data.count || 0;
+                    let totalConfidence = 0;
+                    let totalDuration = 0;
+                    let predictionCounts = {};
+                    
+                    data.records.forEach(record => {
+                        totalConfidence += record.confidence || 0;
+                        totalDuration += record.duration || 0;
+                        
+                        const pred = record.prediction;
+                        if (!predictionCounts[pred]) {
+                            predictionCounts[pred] = 0;
+                        }
+                        predictionCounts[pred]++;
+                    });
+                    
+                    const avgConfidence = total > 0 ? (totalConfidence / total * 100).toFixed(1) : 0;
+                    const avgDuration = total > 0 ? (totalDuration / total).toFixed(2) : 0;
+                    
+                    // Update stat cards
+                    document.getElementById('stat-total').textContent = total;
+                    document.getElementById('stat-avg-confidence').textContent = avgConfidence + '%';
+                    document.getElementById('stat-avg-duration').textContent = avgDuration + 's';
+                    
+                    // Show prediction breakdown
+                    let statsHtml = '<h4 style="margin-top: 2rem; margin-bottom: 1rem;">Phân bố theo loại thời tiết:</h4>';
+                    statsHtml += '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">';
+                    
+                    Object.entries(predictionCounts).forEach(([pred, count]) => {
+                        const percentage = (count / total * 100).toFixed(1);
+                        statsHtml += `
+                            <div class="stat-card">
+                                <div class="stat-card-label">${pred}</div>
+                                <div class="stat-card-value">${count} (${percentage}%)</div>
+                            </div>
+                        `;
+                    });
+                    
+                    statsHtml += '</div>';
+                    document.getElementById('predictionStats').innerHTML = statsHtml;
+                })
+                .catch(error => console.error('Error loading statistics:', error));
+        }
+
+        function clearHistory() {
+            if (confirm('Bạn chắc chắn muốn xóa toàn bộ lịch sử phân tích?')) {
+                fetch('/api/history/cleanup', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({days_old: 0})
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(`Đã xóa ${data.deleted_count} bản ghi`);
+                    loadHistory();
+                    loadStatistics();
+                })
+                .catch(error => console.error('Error clearing history:', error));
+            }
+        }
+
+        function exportHistory() {
+            fetch('/api/history/all?limit=10000')
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.records || data.records.length === 0) {
+                        alert('Không có dữ liệu để xuất');
+                        return;
+                    }
+                    
+                    // Create JSON file
+                    const jsonData = JSON.stringify(data.records, null, 2);
+                    const blob = new Blob([jsonData], { type: 'application/json' });
+                    const url = window.URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    
+                    const now = new Date();
+                    const filename = `weather_analysis_${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}-${String(now.getMinutes()).padStart(2, '0')}.json`;
+                    
+                    link.setAttribute('download', filename);
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    window.URL.revokeObjectURL(url);
+                    
+                    alert(`Đã xuất ${data.records.length} bản ghi`);
+                })
+                .catch(error => {
+                    console.error('Error exporting history:', error);
+                    alert('Lỗi khi xuất dữ liệu');
+                });
+        }
+
+        function exportHistoryCSV() {
+            fetch('/api/history/all?limit=10000')
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.records || data.records.length === 0) {
+                        alert('Không có dữ liệu để xuất');
+                        return;
+                    }
+                    
+                    // Create CSV header
+                    const headers = ['ID', 'Thời gian', 'Năm', 'Tháng', 'Ngày', 'Giờ', 'Phút', 'Giây', 'Tên ảnh', 'Dự đoán', 'Độ tin cậy', 'Thời gian xử lý (s)', 'Ghi chú'];
+                    
+                    // Create CSV rows
+                    let csvContent = headers.map(h => `"${h}"`).join(',') + '\n';
+                    
+                    data.records.forEach(record => {
+                        const row = [
+                            record.id,
+                            record.timestamp,
+                            record.year,
+                            record.month,
+                            record.day,
+                            record.hour,
+                            record.minute,
+                            record.second,
+                            record.image_name || '',
+                            record.prediction,
+                            (record.confidence * 100).toFixed(1),
+                            (record.duration || 0).toFixed(3),
+                            record.notes || ''
+                        ];
+                        csvContent += row.map(cell => `"${cell}"`).join(',') + '\n';
+                    });
+                    
+                    // Create and download CSV file
+                    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                    const url = window.URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    
+                    const now = new Date();
+                    const filename = `weather_analysis_${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}_${String(now.getHours()).padStart(2, '0')}-${String(now.getMinutes()).padStart(2, '0')}.csv`;
+                    
+                    link.setAttribute('download', filename);
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    window.URL.revokeObjectURL(url);
+                    
+                    alert(`Đã xuất ${data.records.length} bản ghi`);
+                })
+                .catch(error => {
+                    console.error('Error exporting CSV:', error);
+                    alert('Lỗi khi xuất dữ liệu');
+                });
+        }
+
+        // Xử lý khi chọn file
+        document.getElementById('imageInput').addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    const preview = document.getElementById('preview');
+                    const previewContainer = document.querySelector('.preview-container');
+                    preview.src = e.target.result;
+                    previewContainer.style.display = 'block';
+                    
+                    // Ẩn kết quả cũ nếu có
+                    document.getElementById('result').style.display = 'none';
+                    
+                    // Hiển thị loading
+                    document.querySelector('.progress').style.display = 'block';
+                    
+                    // Gửi ảnh lên server
+                    uploadImage(document.getElementById('imageInput').files[0]);
+                }
+                
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        });
+
+        function uploadImage(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            fetch('/predict', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.querySelector('.progress').style.display = 'none';
+                document.getElementById('result').style.display = 'block';
+                
+                if (data.error) {
+                    document.getElementById('prediction').textContent = 'Lỗi: ' + data.error;
+                    return;
+                }
+                
+                // Hiển thị kết quả
+                const confidence = (data.confidence * 100).toFixed(1);
+                const duration = (data.duration || 0).toFixed(3);
+                const resultTime = new Date(data.timestamp).toLocaleTimeString('vi-VN');
+                
+                document.getElementById('prediction').innerHTML = 
+                    `Dự đoán: <strong>${data.class}</strong> (${confidence}% chắc chắn)`;
+                document.getElementById('duration').textContent = duration;
+                document.getElementById('result-time').textContent = resultTime;
+                
+                if (data.warning) {
+                    document.getElementById('prediction').innerHTML += 
+                        `<br><small style="color: orange;">${data.warning}</small>`;
+                }
+                
+                // Cập nhật confidence bars
+                updateConfidenceBars(data.confidences);
+                
+                // Reload history
+                loadHistory();
+                loadStatistics();
+            })
+            .catch(error => {
+                document.querySelector('.progress').style.display = 'none';
+                document.querySelector('.preview-container').style.display = 'block';
+                document.getElementById('result').style.display = 'block';
+                document.getElementById('prediction').textContent = 'Lỗi kết nối server';
+                console.error('Error:', error);
+            });
+        }
+
+        function updateConfidenceBars(confidences) {
+            const weatherTypes = {
+                'Nắng': ['sunny-bar', 'sunny-confidence'],
+                'Mưa': ['rainy-bar', 'rainy-confidence'],
+                'Tuyết': ['snowy-bar', 'snowy-confidence']
+            };
+            
+            for (const [weather, value] of Object.entries(confidences)) {
+                const [barId, confidenceId] = weatherTypes[weather];
+                const percentage = (value * 100).toFixed(1);
+                
+                document.getElementById(barId).style.width = `${percentage}%`;
+                document.getElementById(confidenceId).textContent = `${percentage}%`;
+            }
+        }
+    </script>
+</body>
+</html>

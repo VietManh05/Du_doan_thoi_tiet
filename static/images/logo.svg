@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="200" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <!-- Base circle -->
+    <circle cx="100" cy="100" r="90" fill="#2563eb" opacity="0.1"/>
+    
+    <!-- Weather icons -->
+    <g transform="translate(50, 50)">
+        <!-- Sun -->
+        <circle cx="50" cy="50" r="25" fill="#eab308"/>
+        <g stroke="#eab308" stroke-width="4">
+            <line x1="50" y1="10" x2="50" y2="0"/>
+            <line x1="50" y1="90" x2="50" y2="100"/>
+            <line x1="10" y1="50" x2="0" y2="50"/>
+            <line x1="90" y1="50" x2="100" y2="50"/>
+        </g>
+        
+        <!-- Rain drops -->
+        <path d="M30,70 Q35,80 40,70" stroke="#3b82f6" fill="none" stroke-width="4"/>
+        <path d="M60,70 Q65,80 70,70" stroke="#3b82f6" fill="none" stroke-width="4"/>
+    </g>
+    
+    <!-- Text -->
+    <text x="100" y="160" text-anchor="middle" font-family="Arial" font-weight="bold" font-size="24" fill="#1e293b">
+        AI Weather
+    </text>
+</svg>
